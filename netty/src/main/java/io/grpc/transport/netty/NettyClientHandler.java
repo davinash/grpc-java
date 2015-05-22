@@ -132,6 +132,12 @@ class NettyClientHandler extends Http2ConnectionHandler {
     ctx.flush();
   }
 
+  @Override
+  public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+    // Don't call super as it will flush immediately, instead enqueue the flush
+    clientWriteQueue.scheduleFlush();
+  }
+
   /**
    * Handler for commands sent from the stream.
    */

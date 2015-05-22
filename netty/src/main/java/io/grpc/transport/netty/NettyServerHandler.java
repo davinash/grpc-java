@@ -134,6 +134,12 @@ class NettyServerHandler extends Http2ConnectionHandler {
     initConnectionWindow();
   }
 
+  @Override
+  public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+    // Don't call super as it will flush immediately, instead enqueue the flush
+    serverWriteQueue.scheduleFlush();
+  }
+
   private void onHeadersRead(ChannelHandlerContext ctx, int streamId, Http2Headers headers)
       throws Http2Exception {
     if (!teWarningLogged && !TE_TRAILERS.equals(headers.get(TE_HEADER))) {
